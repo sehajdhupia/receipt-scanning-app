@@ -1,6 +1,7 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { OpenAI } from 'openai';
 import Tesseract from 'tesseract.js';
-import JSON5 from 'json5'; // Replaced require with ES module import
+import JSON5 from 'json5'; // Changed to ES module import
 
 // Create OpenAI instance
 const openai = new OpenAI({
@@ -15,7 +16,7 @@ export const config = {
 };
 
 // Helper function to parse the request body
-async function parseRequestBody(req) {
+async function parseRequestBody(req: NextApiRequest): Promise<any> {
   return new Promise((resolve, reject) => {
     let body = '';
     req.on('data', (chunk) => {
@@ -30,7 +31,7 @@ async function parseRequestBody(req) {
   });
 }
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log('--- Incoming Request to /api/parseReceipt ---');
 
   if (req.method !== 'POST') {
