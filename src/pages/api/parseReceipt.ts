@@ -37,13 +37,13 @@ async function parseRequestBody(req: NextApiRequest): Promise<Record<string, unk
         // Attempt to parse the body as JSON
         const parsed = JSON5.parse(body);
         resolve(parsed);
-      } catch (error) {
+      } catch (err) {
         reject(new Error('Invalid JSON in request body'));
       }
     });
 
-    req.on('error', (error) => {
-      reject(new Error(`Error reading request body: ${error.message}`));
+    req.on('error', (err) => {
+      reject(new Error(`Error reading request body: ${err instanceof Error ? err.message : String(err)}`));
     });
   });
 }
@@ -75,7 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('Starting OCR with Tesseract.js...');
     const tesseractOptions = {
-      logger: (info: any) => console.log('Tesseract progress:', info), // Log OCR progress
+      logger: (info: { status: string; progress: number }) => console.log('Tesseract progress:', info), // Specified logger type
     };
 
     // Perform OCR to extract text from the base64 image
@@ -124,13 +124,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Send the structured data as the API response
     res.status(200).json({ success: true, data: structuredData });
-  } catch (error) {
+  } catch (err) {
     // Handle errors and log them
-    if (error instanceof Error) {
-      console.error('Error during receipt processing:', error.message);
-      res.status(500).json({ success: false, error: error.message });
+    if (err instanceof Error) {
+      console.error('Error during receipt processing:', err.message);
+      res.status(500).json({ success: false, error: err.message });
     } else {
-      console.error('Unexpected error during receipt processing:', error);
+      console.error('Unexpected error during receipt processing:', err);
       res.status(500).json({ success: false, error: 'An unknown error occurred' });
     }
   }
