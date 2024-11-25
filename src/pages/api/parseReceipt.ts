@@ -16,7 +16,7 @@ export const config = {
 };
 
 // Helper function to parse the request body
-async function parseRequestBody(req: NextApiRequest): Promise<any> {
+async function parseRequestBody(req: NextApiRequest): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
     let body = '';
     req.on('data', (chunk) => {
@@ -41,7 +41,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // Parse the incoming request body
-    const { imageBase64 } = await parseRequestBody(req);
+    const { imageBase64 } = (await parseRequestBody(req)) as {
+      imageBase64: string;
+    }; // Cast to ensure correct type
     if (!imageBase64) {
       res.status(400).json({ success: false, message: 'Missing imageBase64' });
       return;
@@ -78,7 +80,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('Raw OpenAI Response:', rawContent);
 
     // Parse and clean response
-    const structuredData = JSON5.parse(rawContent);
+    const structuredData = JSON5.parse(rawContent) as {
+      vendorName: string;
+      lineItems: { name: string; value: number }[];
+      totalAmount: number;
+    };
     console.log('Parsed Structured Data:', structuredData);
 
     res.status(200).json({ success: true, data: structuredData });
