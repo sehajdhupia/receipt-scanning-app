@@ -92,7 +92,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.status(200).json({ success: true, data: structuredData });
   } catch (error) {
-    console.error('Error during receipt processing:', error.message || error);
-    res.status(500).json({ success: false, error: error.message });
+    if (error instanceof Error) {
+      console.error('Error during receipt processing:', error.message);
+      res.status(500).json({ success: false, error: error.message });
+    } else {
+      console.error('Unexpected error during receipt processing:', error);
+      res.status(500).json({ success: false, error: 'An unknown error occurred' });
+    }
   }
 }
