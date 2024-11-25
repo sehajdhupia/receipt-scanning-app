@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { OpenAI } from 'openai';
 import Tesseract from 'tesseract.js';
-import JSON5 from 'json5'; // Changed to ES module import
+import JSON5 from 'json5'; // ES module import
 
 // Create OpenAI instance
 const openai = new OpenAI({
@@ -21,7 +21,6 @@ async function parseRequestBody(req: NextApiRequest): Promise<Record<string, unk
     let body = '';
     req.on('data', (chunk) => {
       body += chunk;
-      // Reject if body size exceeds 5MB
       if (body.length > 5 * 1024 * 1024) {
         reject(new Error('Body size exceeded 5MB limit'));
       }
@@ -41,9 +40,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // Parse the incoming request body
-    const { imageBase64 } = (await parseRequestBody(req)) as {
-      imageBase64: string;
-    }; // Cast to ensure correct type
+    const parsedBody = (await parseRequestBody(req)) as { imageBase64?: string };
+    const imageBase64 = parsedBody.imageBase64;
+
     if (!imageBase64) {
       res.status(400).json({ success: false, message: 'Missing imageBase64' });
       return;
@@ -76,7 +75,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
     });
 
-    const rawContent = openaiResponse.choices[0]?.message?.content;
+    const rawContent = openaiResponse.choices[0]?.message?.content ?? '';
+    if (!rawContent) {
+      throw new Error('OpenAI response is empty');
+    }
+
     console.log('Raw OpenAI Response:', rawContent);
 
     // Parse and clean response
