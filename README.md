@@ -28,7 +28,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Project Overview
 
 Features: 
-OCR Integration:
+- OCR Integration:
 - Extracts text from uploaded receipt images using Tesseract.js.
 LLM Analysis:
 - Parses extracted text and structures it into JSON format using OpenAI GPT.
