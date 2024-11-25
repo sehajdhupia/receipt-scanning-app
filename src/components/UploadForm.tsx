@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Image from 'next/image'; // Replaced img with Image for optimization
 
 interface UploadFormProps {
   onUpload: (file: File) => void;
@@ -25,7 +26,13 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUpload }) => {
         className="border p-2 rounded text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       {filePreview && (
-        <img src={filePreview} alt="Receipt Preview" className="w-64 border rounded shadow-md" />
+        <Image
+          src={filePreview}
+          alt="Receipt Preview"
+          width={256} // Set a fixed width
+          height={256} // Set a fixed height
+          className="border rounded shadow-md"
+        />
       )}
     </div>
   );

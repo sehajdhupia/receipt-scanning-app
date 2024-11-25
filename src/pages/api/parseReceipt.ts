@@ -1,6 +1,6 @@
 import { OpenAI } from 'openai';
 import Tesseract from 'tesseract.js';
-const JSON5 = require('json5');
+import JSON5 from 'json5'; // Replaced require with ES module import
 
 // Create OpenAI instance
 const openai = new OpenAI({
@@ -25,7 +25,7 @@ async function parseRequestBody(req) {
         reject(new Error('Body size exceeded 5MB limit'));
       }
     });
-    req.on('end', () => resolve(JSON.parse(body)));
+    req.on('end', () => resolve(JSON5.parse(body)));
     req.on('error', reject);
   });
 }

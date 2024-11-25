@@ -3,9 +3,15 @@
 import { useState } from "react";
 import axios from "axios";
 
+interface ReceiptData {
+  vendorName: string;
+  lineItems: { name: string; value: number }[];
+  totalAmount: number;
+}
+
 export default function Home() {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any | null>(null);
+  const [result, setResult] = useState<ReceiptData | null>(null); // Changed 'any' to 'ReceiptData'
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleUpload = async (file: File) => {
@@ -67,7 +73,6 @@ export default function Home() {
     <div className="min-h-screen bg-[#c1e6c8] text-black flex flex-col items-center py-8">
       <h1 className="text-4xl font-bold mb-6 text-center text-blue-600">Receipt Scanning App</h1>
 
-      {/* Improved File Uploader Section */}
       <div className="relative w-full max-w-md px-6 py-4 bg-white border-2 border-dashed border-blue-400 rounded-lg text-center hover:border-blue-600 hover:bg-blue-50 transition-all duration-200">
         <input
           type="file"
@@ -90,9 +95,7 @@ export default function Home() {
               d="M7 16v-4a4 4 0 114 4h4a4 4 0 11-4-4V6a4 4 0 114 4h-4"
             />
           </svg>
-          <p className="text-gray-700 font-medium">
-            Drag & drop or click to upload a receipt
-          </p>
+          <p className="text-gray-700 font-medium">Drag & drop or click to upload a receipt</p>
           <p className="text-sm text-gray-500">(JPG or PNG)</p>
         </div>
         {selectedFile && (
@@ -130,7 +133,7 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {result.lineItems.map((item: any, index: number) => (
+                {result.lineItems.map((item, index) => (
                   <tr key={index} className="hover:bg-gray-100">
                     <td className="border border-gray-300 px-4 py-2 text-black">{item.name}</td>
                     <td className="border border-gray-300 px-4 py-2 text-black">${item.value.toFixed(2)}</td>
