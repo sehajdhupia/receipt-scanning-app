@@ -49,9 +49,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.log('Starting OCR with Tesseract.js...');
-    const { data } = await Tesseract.recognize(`data:image/jpeg;base64,${imageBase64}`, 'eng', {
-      logger: (info) => console.log('Tesseract progress:', info),
-    });
+
+    // Configure Tesseract.js to use the correct WASM file path
+    const tesseractOptions = {
+      corePath: '/tesseract-core-simd.wasm', // Path to the WASM file in the `public` folder
+      logger: (info: { status: string; progress: number }) =>
+        console.log('Tesseract progress:', info), // Log progress for debugging
+    };
+
+    const { data } = await Tesseract.recognize(`data:image/jpeg;base64,${imageBase64}`, 'eng', tesseractOptions);
 
     const rawText = data.text.trim();
     console.log('Extracted OCR Text:', rawText);
